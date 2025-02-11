@@ -1,6 +1,8 @@
 package com.ProjectSync.ProjectSync.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +29,7 @@ public class User implements UserDetails {
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
     private Date createdAt;
+
 
 
     @Override
