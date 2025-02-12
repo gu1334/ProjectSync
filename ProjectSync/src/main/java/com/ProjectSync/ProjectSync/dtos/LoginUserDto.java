@@ -1,5 +1,10 @@
 package com.ProjectSync.ProjectSync.dtos;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+
 public class LoginUserDto {
     private String email;
 

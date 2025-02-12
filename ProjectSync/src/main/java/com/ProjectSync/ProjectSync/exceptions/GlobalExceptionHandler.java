@@ -19,7 +19,6 @@ public class GlobalExceptionHandler {
 
         ProblemDetail errorDetail = null;
 
-        // TODO send this stack trace to an observability tool
         exception.printStackTrace();
 
         if (exception instanceof BadCredentialsException) {
