@@ -1,28 +1,27 @@
 package com.ProjectSync.ProjectSync.dtos;
 
 
-import org.antlr.v4.runtime.misc.NotNull;
-
 public class ProjectDto {
 
     private Integer id;
-    private String projectName;
-    private String projectDescription;
 
-    public String getProjectName() {
-        return projectName;
+    private String name;
+    private String description;
+
+    public String getName() {
+        return name;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getProjectDescription() {
-        return projectDescription;
+    public String getDescription() {
+        return description;
     }
 
-    public void setProjectDescription(String projectDescription) {
-        this.projectDescription = projectDescription;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Integer getId() {

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
@@ -21,10 +22,12 @@ public class Project {
     @Column(name = "project_id")
     private Integer id;
 
-    @Column(name = "name")
+
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description")
+
+    @Column(name = "description", nullable = false)
     private String description;
 
     @CreationTimestamp
