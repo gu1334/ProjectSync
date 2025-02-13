@@ -2,6 +2,7 @@ package com.ProjectSync.ProjectSync.controller;
 
 import com.ProjectSync.ProjectSync.dtos.ProjectDto;
 import com.ProjectSync.ProjectSync.entities.Project;
+import com.ProjectSync.ProjectSync.exceptions.ProjectError;
 import com.ProjectSync.ProjectSync.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +23,12 @@ public class ProjectController {
 
 
     @PostMapping
-    public ResponseEntity<Project> createProjectOrUptade(@RequestBody ProjectDto projectDto) {
-        Project createProject = projectService.createProjectorUpdate(projectDto);
-        return ResponseEntity.ok(createProject);
+    public ResponseEntity<Project> createProjectOrUptade(@RequestBody ProjectDto projectDto) throws ProjectError {
+
+
+            Project createProject = projectService.createProjectorUpdate(projectDto);
+            return ResponseEntity.ok(createProject);
+
 
 
     }
