@@ -1,5 +1,6 @@
 package com.ProjectSync.ProjectSync.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import org.antlr.v4.runtime.misc.NotNull;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
+import java.util.Set;
 
 @Table(name = "project")
 @Entity
@@ -33,6 +35,11 @@ public class Project {
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
     private Date createAt;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
 
 
     public Integer getId() {

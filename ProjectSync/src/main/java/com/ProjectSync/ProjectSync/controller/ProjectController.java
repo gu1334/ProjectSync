@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
@@ -40,6 +42,11 @@ public class ProjectController {
             System.err.println("Erro ao criar/atualizar projeto: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+    }
+
+    @GetMapping
+    public List<Project> getAllProjects() throws ProjectError {
+            return projectService.getAll();
     }
 
 
