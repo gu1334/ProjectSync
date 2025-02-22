@@ -48,12 +48,12 @@ class ProjectControllerTest {
         createdProject.setName("Test Project");
         createdProject.setDescription("Project description");
 
-        when(projectService.createProjectorUpdate(Mockito.any(ProjectDto.class))).thenReturn(createdProject);
+        when(projectService.createProjectOrUpdate(Mockito.any(ProjectDto.class))).thenReturn(createdProject);
 
         String projectDtoJson = objectMapper.writeValueAsString(projectDto);
 
         // Chamada POST
-        mockMvc.perform(post("http://localhost:8080/projects")
+        mockMvc.perform(post("/projects")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(projectDtoJson))
                 .andExpect(status().isCreated())  // Verifica o status 201
@@ -74,12 +74,12 @@ class ProjectControllerTest {
         updatedProject.setName("Updated Project");
         updatedProject.setDescription("Updated description");
 
-        when(projectService.createProjectorUpdate(Mockito.any(ProjectDto.class))).thenReturn(updatedProject);
+        when(projectService.createProjectOrUpdate(Mockito.any(ProjectDto.class))).thenReturn(updatedProject);
 
         String projectDtoJson = objectMapper.writeValueAsString(projectDto);
 
         // Chamada POST
-        mockMvc.perform(post("http://localhost:8080/projects")
+        mockMvc.perform(post("/projects")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(projectDtoJson))
                 .andExpect(status().isOk())  // Verifica o status 200
@@ -94,7 +94,7 @@ class ProjectControllerTest {
         projectDto.setName(null);
         projectDto.setDescription(null);
 
-        when(projectService.createProjectorUpdate(Mockito.any(ProjectDto.class)))
+        when(projectService.createProjectOrUpdate(Mockito.any(ProjectDto.class)))
                 .thenThrow(new ProjectError("Campos Obrigatórios"));
 
         // Act & Assert
@@ -102,7 +102,7 @@ class ProjectControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(projectDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Campos Obrigatórios"));
+                .andExpect(jsonPath("$.error").value("Campos Obrigatórios"));
     }
 
     @Test
@@ -111,14 +111,15 @@ class ProjectControllerTest {
         ProjectDto projectDto = new ProjectDto();
         projectDto.setDescription("teste obrigatorio");
 
-        when(projectService.createProjectorUpdate(Mockito.any(ProjectDto.class)))
+        when(projectService.createProjectOrUpdate(Mockito.any(ProjectDto.class)))
                 .thenThrow(new ProjectError("Campos Obrigatórios"));
 
         // Act & Assert
         mockMvc.perform(post("/projects")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(projectDto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Campos Obrigatórios"));
     }
 
     @Test
@@ -127,14 +128,15 @@ class ProjectControllerTest {
         ProjectDto projectDto = new ProjectDto();
         projectDto.setName("teste obrigatorio");
 
-        when(projectService.createProjectorUpdate(Mockito.any(ProjectDto.class)))
+        when(projectService.createProjectOrUpdate(Mockito.any(ProjectDto.class)))
                 .thenThrow(new ProjectError("Campos Obrigatórios"));
 
         // Act & Assert
         mockMvc.perform(post("/projects")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(projectDto)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Campos Obrigatórios"));
     }
 
     @Test
@@ -144,7 +146,7 @@ class ProjectControllerTest {
         projectDto.setName("Erro Project");
         projectDto.setDescription("Erro na criação");
 
-        when(projectService.createProjectorUpdate(Mockito.any(ProjectDto.class)))
+        when(projectService.createProjectOrUpdate(Mockito.any(ProjectDto.class)))
                 .thenThrow(new ProjectError("Erro na criação do projeto"));
 
         // Act & Assert
@@ -152,6 +154,6 @@ class ProjectControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(projectDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Erro na criação do projeto"));
+                .andExpect(jsonPath("$.error").value("Erro na criação do projeto"));
     }
 }

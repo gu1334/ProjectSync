@@ -7,9 +7,11 @@ import com.ProjectSync.ProjectSync.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/projects")
@@ -22,27 +24,24 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
-
     @PostMapping
-    public ResponseEntity<Project> createProjectOrUptade(@RequestBody ProjectDto projectDto) throws ProjectError {
+    public ResponseEntity<?> createProjectOrUpdate(@RequestBody ProjectDto projectDto) {
         try {
-            Project createProject = projectService.createProjectorUpdate(projectDto);
+            Project createdProject = projectService.createProjectOrUpdate(projectDto);
 
-            if (createProject == null || createProject.getName() == null || createProject.getDescription() == null) {
+            if (createdProject.getName() == null || createdProject.getDescription() == null) {
                 throw new ProjectError("Erro na criação do projeto: nome ou descrição inválidos");
             }
 
-            if (projectDto.getId() == null) {
-                return ResponseEntity.status(HttpStatus.CREATED).body(createProject);
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(createProject);
-            }
+            HttpStatus status = (projectDto.getId() == null) ? HttpStatus.CREATED : HttpStatus.OK;
+            return ResponseEntity.status(status).body(createdProject);
+
         } catch (ProjectError e) {
-            // Log para depuração
-            System.err.println("Erro ao criar/atualizar projeto: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
+
+
 
     @GetMapping
     public List<Project> getAllProjects() throws ProjectError {
