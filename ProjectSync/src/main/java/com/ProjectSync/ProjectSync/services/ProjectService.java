@@ -6,6 +6,8 @@ import com.ProjectSync.ProjectSync.entities.User;
 import com.ProjectSync.ProjectSync.exceptions.ProjectError;
 import com.ProjectSync.ProjectSync.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -58,12 +60,12 @@ public class ProjectService {
     }
 
 
-    public List<Project> getAll() throws ProjectError {
+    public List<Project> getAll(int page, int size) throws ProjectError {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User user = getUserFromAuthentication(authentication);
 
-            return projectRepository.findByUserId(user.getId());
+            return projectRepository.findByUserId(user.getId(), PageRequest.of(page, size));
 
         } catch (Exception e) {
             throw new ProjectError("Erro para achar projetos: " + e.getMessage());
