@@ -1,40 +1,24 @@
 package com.ProjectSync.ProjectSync.services;
 
-import com.ProjectSync.ProjectSync.configs.JwtAuthenticationFilter;
-import com.ProjectSync.ProjectSync.dtos.LoginResponse;
 import com.ProjectSync.ProjectSync.dtos.ProjectDto;
 import com.ProjectSync.ProjectSync.entities.Project;
 import com.ProjectSync.ProjectSync.entities.User;
 import com.ProjectSync.ProjectSync.exceptions.ProjectError;
 import com.ProjectSync.ProjectSync.repositories.ProjectRepository;
-import com.ProjectSync.ProjectSync.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.Claims;
 
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class ProjectService {
 
-    private final ProjectRepository projectRepository;
-    private final UserRepository userRepository;
-
     @Autowired
-    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository) {
-        this.projectRepository = projectRepository;
-        this.userRepository = userRepository;
-    }
-
+    private ProjectRepository projectRepository;
 
 
     private User getUserFromAuthentication(Authentication authentication) {
@@ -44,8 +28,6 @@ public class ProjectService {
         }
         throw new IllegalStateException("Tipo de autenticação inesperado: " + authentication.getClass());
     }
-
-
 
 
     public Project createProjectOrUpdate(ProjectDto projectDto) throws ProjectError {
@@ -76,13 +58,36 @@ public class ProjectService {
     }
 
 
-
     public List<Project> getAll() throws ProjectError {
         try {
-            return projectRepository.findAll();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User user = getUserFromAuthentication(authentication);
+
+            return projectRepository.findByUserId(user.getId());
+
         } catch (Exception e) {
             throw new ProjectError("Erro para achar projetos: " + e.getMessage());
         }
     }
+
+    public void deleteProject(Integer id) throws ProjectError {
+
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User user = getUserFromAuthentication(authentication);
+            Project projeto = projectRepository.findById(id)
+                    .orElseThrow(() -> new ProjectError("Projeto não encontrado"));
+
+            if (!projeto.getUser().getId().equals(user.getId())) {
+                throw new ProjectError("Usuario diferente do projeto");
+            }
+            projectRepository.delete(projeto);
+
+        } catch (Exception e) {
+            throw new ProjectError("Erro para deletar projeto: " + e.getMessage());
+        }
+
+    }
+
 
 }

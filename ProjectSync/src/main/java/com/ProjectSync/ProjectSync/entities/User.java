@@ -79,4 +79,12 @@ public class User implements UserDetails {
         this.password = password;
         return this; // Retorna a instância de User
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 }

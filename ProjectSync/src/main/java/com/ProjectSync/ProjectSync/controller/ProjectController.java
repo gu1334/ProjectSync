@@ -7,7 +7,6 @@ import com.ProjectSync.ProjectSync.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -42,13 +41,27 @@ public class ProjectController {
     }
 
 
-
     @GetMapping
     public List<Project> getAllProjects() throws ProjectError {
+        try {
+
             return projectService.getAll();
+        } catch (Exception e) {
+            throw new ProjectError(e.getMessage());
+        }
     }
 
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProject(@PathVariable("id") Integer id) throws ProjectError {
+
+        try {
+            projectService.deleteProject(id);
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("erro ao excluir o projeto");
+        }
+    }
 
 
     // Tratamento de exceções de forma separada
