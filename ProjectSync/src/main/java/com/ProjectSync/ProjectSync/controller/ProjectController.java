@@ -1,13 +1,11 @@
 package com.ProjectSync.ProjectSync.controller;
 
 import com.ProjectSync.ProjectSync.dtos.ProjectDto;
+import com.ProjectSync.ProjectSync.dtos.UpdateProjectDto;
 import com.ProjectSync.ProjectSync.entities.Project;
 import com.ProjectSync.ProjectSync.exceptions.ProjectError;
 import com.ProjectSync.ProjectSync.services.ProjectService;
-import org.hibernate.query.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -66,6 +64,18 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("erro ao excluir o projeto");
         }
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Project> updateProject(@PathVariable("id") Integer id, @RequestBody UpdateProjectDto updateProjectDto)throws ProjectError{
+        try {
+
+            Project updateProject = projectService.updateProject(id, updateProjectDto);
+            return ResponseEntity.status(HttpStatus.OK).body(updateProject);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
 
 
     // Tratamento de exceções de forma separada

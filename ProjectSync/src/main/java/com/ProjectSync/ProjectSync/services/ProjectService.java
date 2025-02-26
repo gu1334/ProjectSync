@@ -1,13 +1,13 @@
 package com.ProjectSync.ProjectSync.services;
 
 import com.ProjectSync.ProjectSync.dtos.ProjectDto;
+import com.ProjectSync.ProjectSync.dtos.UpdateProjectDto;
 import com.ProjectSync.ProjectSync.entities.Project;
 import com.ProjectSync.ProjectSync.entities.User;
 import com.ProjectSync.ProjectSync.exceptions.ProjectError;
 import com.ProjectSync.ProjectSync.repositories.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -89,6 +89,35 @@ public class ProjectService {
             throw new ProjectError("Erro para deletar projeto: " + e.getMessage());
         }
 
+    }
+
+
+    // Atualiza um produto (sem atualizar as variações dele)
+    public Project updateProject(Integer id, UpdateProjectDto updateProjectDto) throws ProjectError {
+
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            User user = getUserFromAuthentication(authentication);
+
+            Project projeto = projectRepository.findById(id)
+                    .orElseThrow(() -> new ProjectError("Projeto não encontrado"));
+
+            if (!projeto.getUser().getId().equals(user.getId())) {
+                throw new ProjectError("Usuario diferente do projeto");
+            }
+
+            if (updateProjectDto.name() != null) {
+                projeto.setName(updateProjectDto.name());
+            }
+            if (updateProjectDto.description() != null) {
+                projeto.setDescription(updateProjectDto.description());
+            }
+
+            return projectRepository.save(projeto);
+
+        } catch (Exception e) {
+            throw new ProjectError("Erro para modificar projeto: " + e.getMessage());
+        }
     }
 
 
