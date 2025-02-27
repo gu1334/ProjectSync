@@ -66,16 +66,15 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable("id") Integer id, @RequestBody UpdateProjectDto updateProjectDto)throws ProjectError{
+    public ResponseEntity<Project> updateProject(@PathVariable("id") Integer id, @RequestBody UpdateProjectDto updateProjectDto) throws ProjectError {
         try {
 
             Project updateProject = projectService.updateProject(id, updateProjectDto);
             return ResponseEntity.status(HttpStatus.OK).body(updateProject);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
-
 
 
     // Tratamento de exceções de forma separada
