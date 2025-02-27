@@ -1,6 +1,7 @@
 package com.ProjectSync.ProjectSync.services;
 
 import com.ProjectSync.ProjectSync.dtos.TeamDto;
+import com.ProjectSync.ProjectSync.dtos.UpdateTeamDto;
 import com.ProjectSync.ProjectSync.entities.Team;
 import com.ProjectSync.ProjectSync.exceptions.ProjectError;
 import com.ProjectSync.ProjectSync.repositories.TeamRepository;
@@ -44,4 +45,21 @@ public class TeamService {
 
     }
 
+    public Team upadateTeam(Integer id, UpdateTeamDto updateTeamDto) throws ProjectError {
+
+        try {
+
+            Team team = teamRepository.findById(id)
+                    .orElseThrow(() -> new  ProjectError("Projeto não encontrado"));
+            if (updateTeamDto.name() != null) {
+                team.setName(updateTeamDto.name());
+            }
+
+            return teamRepository.save(team);
+
+        } catch (Exception e) {
+            throw new ProjectError("Erro para atualizar o nome do time: " + e.getMessage());
+        }
+
+    }
 }
