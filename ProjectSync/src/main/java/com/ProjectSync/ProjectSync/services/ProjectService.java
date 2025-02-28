@@ -1,11 +1,14 @@
 package com.ProjectSync.ProjectSync.services;
 
 import com.ProjectSync.ProjectSync.dtos.ProjectDto;
+import com.ProjectSync.ProjectSync.dtos.ProjectResponse;
 import com.ProjectSync.ProjectSync.dtos.UpdateProjectDto;
 import com.ProjectSync.ProjectSync.entities.Project;
+import com.ProjectSync.ProjectSync.entities.Team;
 import com.ProjectSync.ProjectSync.entities.User;
 import com.ProjectSync.ProjectSync.exceptions.ProjectError;
 import com.ProjectSync.ProjectSync.repositories.ProjectRepository;
+import com.ProjectSync.ProjectSync.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,12 +18,16 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProjectService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
 
 
     private User getUserFromAuthentication(Authentication authentication) {
@@ -32,31 +39,54 @@ public class ProjectService {
     }
 
 
-    public Project createProjectOrUpdate(ProjectDto projectDto) throws ProjectError {
-        if (projectDto.getName() == null || projectDto.getDescription() == null) {
-            throw new ProjectError("Nome e descrição são obrigatórios");
+    public ProjectResponse createProjectOrUpdate(ProjectDto projectDto) throws ProjectError {
+        if (projectDto.getName() == null || projectDto.getDescription() == null || projectDto.getTeam() == null) {
+            throw new ProjectError("Nome e descrição e time são obrigatórios");
         }
+
+        //achar qual o team
+        Team team = teamRepository.findByName(projectDto.getTeam()).orElseThrow(() -> new RuntimeException("Equipe não encontrada: "));
 
         // Atualização de projeto
         if (projectDto.getId() != null) {
-            Project existingProject = projectRepository.findById(projectDto.getId())
-                    .orElseThrow(() -> new ProjectError("Projeto não encontrado para atualização"));
+            Project existingProject = projectRepository.findById(projectDto.getId()).orElseThrow(() -> new ProjectError("Projeto não encontrado para atualização"));
+
 
             existingProject.setName(projectDto.getName());
             existingProject.setDescription(projectDto.getDescription());
-            return projectRepository.save(existingProject);
+            existingProject.setTeam(team);
+            projectRepository.save(existingProject);
+
+
+            ProjectResponse response = new ProjectResponse();
+            response.setId(projectDto.getId());
+            response.setName(projectDto.getName());
+            response.setDescription(projectDto.getDescription());
+            response.setTeam(team.getName());
+            response.setCreatedAt(existingProject.getCreatedAt());
+            return response;
         }
 
         // Criação de novo projeto
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = getUserFromAuthentication(authentication);
 
+
         Project newProject = new Project();
+        newProject.setTeam(team);
         newProject.setUser(user);
         newProject.setName(projectDto.getName());
         newProject.setDescription(projectDto.getDescription());
+        projectRepository.save(newProject);
 
-        return projectRepository.save(newProject);
+
+        ProjectResponse response = new ProjectResponse();
+        response.setId(newProject.getId());
+        response.setName(projectDto.getName());
+        response.setDescription(projectDto.getDescription());
+        response.setTeam(team.getName());
+        response.setCreatedAt(newProject.getCreatedAt());
+        return response;
     }
 
 
@@ -77,8 +107,7 @@ public class ProjectService {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User user = getUserFromAuthentication(authentication);
-            Project projeto = projectRepository.findById(id)
-                    .orElseThrow(() -> new ProjectError("Projeto não encontrado"));
+            Project projeto = projectRepository.findById(id).orElseThrow(() -> new ProjectError("Projeto não encontrado"));
 
             if (!projeto.getUser().getId().equals(user.getId())) {
                 throw new ProjectError("Usuario diferente do projeto");
@@ -93,14 +122,16 @@ public class ProjectService {
 
 
     // Atualiza um produto (sem atualizar as variações dele)
-    public Project updateProject(Integer id, UpdateProjectDto updateProjectDto) throws ProjectError {
+    public ProjectResponse updateProject(Integer id, UpdateProjectDto updateProjectDto) throws ProjectError {
 
         try {
+
+            ProjectResponse response = new ProjectResponse();
+
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User user = getUserFromAuthentication(authentication);
 
-            Project projeto = projectRepository.findById(id)
-                    .orElseThrow(() -> new ProjectError("Projeto não encontrado"));
+            Project projeto = projectRepository.findById(id).orElseThrow(() -> new ProjectError("Projeto não encontrado"));
 
             if (!projeto.getUser().getId().equals(user.getId())) {
                 throw new ProjectError("Usuario diferente do projeto");
@@ -113,7 +144,22 @@ public class ProjectService {
                 projeto.setDescription(updateProjectDto.description());
             }
 
-            return projectRepository.save(projeto);
+
+            if (updateProjectDto.team() != null) {
+                //achar qual o team
+                Optional<Team> team = teamRepository.findByName(updateProjectDto.team());
+                projeto.setTeam(team.orElse(null));
+
+            }
+            projectRepository.save(projeto);
+
+            response.setId(projeto.getId());
+            response.setName(projeto.getName());
+            response.setDescription(projeto.getDescription());
+            response.setTeam(projeto.getTeam().getName());
+            response.setCreatedAt(projeto.getCreatedAt());
+
+            return response;
 
         } catch (Exception e) {
             throw new ProjectError("Erro para modificar projeto: " + e.getMessage());

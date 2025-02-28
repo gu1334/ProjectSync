@@ -8,6 +8,8 @@ import com.ProjectSync.ProjectSync.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class TeamService {
 
@@ -17,8 +19,8 @@ public class TeamService {
     public Team createOrUpdateEquip(TeamDto teamDto) throws ProjectError {
         try {
 
-            Team teamjaexiste = teamRepository.findByName(teamDto.getName());
-            if (teamjaexiste != null) {
+            Optional<Team> teamjaexiste = teamRepository.findByName(teamDto.getName());
+            if (teamjaexiste.isPresent()) {
                 throw new ProjectError("Team with this name already exists");
             }
 

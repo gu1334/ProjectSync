@@ -1,6 +1,7 @@
 package com.ProjectSync.ProjectSync.controller;
 
 import com.ProjectSync.ProjectSync.dtos.ProjectDto;
+import com.ProjectSync.ProjectSync.dtos.ProjectResponse;
 import com.ProjectSync.ProjectSync.dtos.UpdateProjectDto;
 import com.ProjectSync.ProjectSync.entities.Project;
 import com.ProjectSync.ProjectSync.exceptions.ProjectError;
@@ -27,10 +28,10 @@ public class ProjectController {
     @PostMapping
     public ResponseEntity<?> createProjectOrUpdate(@RequestBody ProjectDto projectDto) {
         try {
-            Project createdProject = projectService.createProjectOrUpdate(projectDto);
+            ProjectResponse createdProject = projectService.createProjectOrUpdate(projectDto);
 
-            if (createdProject.getName() == null || createdProject.getDescription() == null) {
-                throw new ProjectError("Erro na criação do projeto: nome ou descrição inválidos");
+            if (createdProject.getName() == null || createdProject.getDescription() == null || createdProject.getTeam() == null) {
+                throw new ProjectError("Erro na criação do projeto: nome ou descrição ou time inválidos");
             }
 
             HttpStatus status = (projectDto.getId() == null) ? HttpStatus.CREATED : HttpStatus.OK;
@@ -66,10 +67,10 @@ public class ProjectController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Project> updateProject(@PathVariable("id") Integer id, @RequestBody UpdateProjectDto updateProjectDto) throws ProjectError {
+    public ResponseEntity<ProjectResponse> updateProject(@PathVariable("id") Integer id, @RequestBody UpdateProjectDto updateProjectDto) throws ProjectError {
         try {
 
-            Project updateProject = projectService.updateProject(id, updateProjectDto);
+            ProjectResponse updateProject = projectService.updateProject(id, updateProjectDto);
             return ResponseEntity.status(HttpStatus.OK).body(updateProject);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

@@ -1,15 +1,22 @@
 package com.ProjectSync.ProjectSync.dtos;
 
+import java.util.Date;
 
-import com.ProjectSync.ProjectSync.entities.Team;
-
-public class ProjectDto {
+public class ProjectResponse {
 
     private Integer id;
-
     private String name;
     private String description;
+    private Date createdAt;
     private String team;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -27,12 +34,12 @@ public class ProjectDto {
         this.description = description;
     }
 
-    public Integer getId() {
-        return id;
+    public Date getCreatedAt() {
+        return createdAt;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 
     public String getTeam() {
