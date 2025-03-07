@@ -1,6 +1,7 @@
 package com.ProjectSync.ProjectSync.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,9 @@ public class Project {
 
     @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
+    @JsonIgnoreProperties("projects") // Evita referência cíclica
     private Team team;
+
 
 
     public Integer getId() {

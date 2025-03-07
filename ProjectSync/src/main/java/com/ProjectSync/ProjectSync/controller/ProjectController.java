@@ -78,6 +78,9 @@ public class ProjectController {
     }
 
 
+    @PostMapping
+
+
     // Tratamento de exceções de forma separada
     @ExceptionHandler(ProjectError.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

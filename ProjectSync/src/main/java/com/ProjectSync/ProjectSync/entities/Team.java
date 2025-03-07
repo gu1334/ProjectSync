@@ -1,5 +1,6 @@
 package com.ProjectSync.ProjectSync.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "team")
@@ -27,6 +29,11 @@ public class Team {
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
     private Date createdAt;
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("team")
+    private List<Project> projects;
+
 
 
     public Integer getId() {
@@ -51,5 +58,13 @@ public class Team {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(List<Project> projects) {
+        this.projects = projects;
     }
 }

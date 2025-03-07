@@ -6,8 +6,11 @@ import com.ProjectSync.ProjectSync.entities.Team;
 import com.ProjectSync.ProjectSync.exceptions.ProjectError;
 import com.ProjectSync.ProjectSync.repositories.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -52,7 +55,7 @@ public class TeamService {
         try {
 
             Team team = teamRepository.findById(id)
-                    .orElseThrow(() -> new  ProjectError("Projeto não encontrado"));
+                    .orElseThrow(() -> new ProjectError("Projeto não encontrado"));
             if (updateTeamDto.name() != null) {
                 team.setName(updateTeamDto.name());
             }
@@ -61,6 +64,17 @@ public class TeamService {
 
         } catch (Exception e) {
             throw new ProjectError("Erro para atualizar o nome do time: " + e.getMessage());
+        }
+
+    }
+
+    public List<Team> getAll() throws ProjectError {
+
+        try {
+            return teamRepository.findAll();
+
+        } catch (Exception e) {
+            throw new ProjectError("Erro Listar os times e suas tarefas: " + e.getMessage());
         }
 
     }

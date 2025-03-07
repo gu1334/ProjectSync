@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/teams")
 public class TeamController {
@@ -30,7 +32,7 @@ public class TeamController {
 
             HttpStatus status = (teamDto.getId() == null) ? HttpStatus.CREATED : HttpStatus.OK;
             return ResponseEntity.status(status).body(createdTeam);
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new ProjectError(e.getMessage());
         }
 
@@ -38,12 +40,24 @@ public class TeamController {
 
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Team> updateTeam(@PathVariable("id") Integer id, @RequestBody UpdateTeamDto updateTeamDto)throws ProjectError{
+    public ResponseEntity<Team> updateTeam(@PathVariable("id") Integer id, @RequestBody UpdateTeamDto updateTeamDto) throws ProjectError {
         try {
-            Team updateTeam = teamService.upadateTeam(id,updateTeamDto);
+            Team updateTeam = teamService.upadateTeam(id, updateTeamDto);
             return ResponseEntity.status(HttpStatus.OK).body(updateTeam);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+
+    @GetMapping
+    public List<Team> getAllTeams() throws ProjectError {
+        try {
+
+            return teamService.getAll();
+
+        } catch (Exception e) {
+            throw new ProjectError(e.getMessage());
         }
     }
 

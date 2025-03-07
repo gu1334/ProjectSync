@@ -136,7 +136,6 @@ public class ProjectService {
             if (!projeto.getUser().getId().equals(user.getId())) {
                 throw new ProjectError("Usuario diferente do projeto");
             }
-
             if (updateProjectDto.name() != null) {
                 projeto.setName(updateProjectDto.name());
             }
