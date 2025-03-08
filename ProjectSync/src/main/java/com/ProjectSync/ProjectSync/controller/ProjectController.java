@@ -4,6 +4,7 @@ import com.ProjectSync.ProjectSync.dtos.ProjectDto;
 import com.ProjectSync.ProjectSync.dtos.ProjectResponse;
 import com.ProjectSync.ProjectSync.dtos.UpdateProjectDto;
 import com.ProjectSync.ProjectSync.entities.Project;
+import com.ProjectSync.ProjectSync.entities.User;
 import com.ProjectSync.ProjectSync.exceptions.ProjectError;
 import com.ProjectSync.ProjectSync.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/projects")
@@ -77,8 +79,6 @@ public class ProjectController {
         }
     }
 
-
-    @PostMapping
 
 
     // Tratamento de exceções de forma separada

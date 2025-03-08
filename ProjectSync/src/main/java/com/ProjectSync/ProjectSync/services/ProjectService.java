@@ -70,7 +70,7 @@ public class ProjectService {
         // Criação de novo projeto
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = getUserFromAuthentication(authentication);
-
+        
 
         Project newProject = new Project();
         newProject.setTeam(team);
@@ -142,13 +142,9 @@ public class ProjectService {
             if (updateProjectDto.description() != null) {
                 projeto.setDescription(updateProjectDto.description());
             }
-
-
             if (updateProjectDto.team() != null) {
-                //achar qual o team
                 Optional<Team> team = teamRepository.findByName(updateProjectDto.team());
                 projeto.setTeam(team.orElse(null));
-
             }
             projectRepository.save(projeto);
 
@@ -164,6 +160,7 @@ public class ProjectService {
             throw new ProjectError("Erro para modificar projeto: " + e.getMessage());
         }
     }
+
 
 
 }

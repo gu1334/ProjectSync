@@ -1,6 +1,7 @@
 package com.ProjectSync.ProjectSync.controller;
 
 import com.ProjectSync.ProjectSync.dtos.ProjectDto;
+import com.ProjectSync.ProjectSync.dtos.ProjectResponse;
 import com.ProjectSync.ProjectSync.entities.Project;
 import com.ProjectSync.ProjectSync.exceptions.ProjectError;
 import com.ProjectSync.ProjectSync.repositories.ProjectRepository;
@@ -20,7 +21,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser
@@ -32,9 +32,6 @@ class ProjectControllerTest {
     @MockBean
     private ProjectService projectService;
 
-    @MockBean
-    private ProjectRepository projectRepository;
-
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
@@ -44,10 +41,12 @@ class ProjectControllerTest {
         projectDto.setName("Test Project");
         projectDto.setDescription("Project description");
 
-        Project createdProject = new Project();
+        ProjectResponse createdProject = new ProjectResponse();
         createdProject.setName("Test Project");
         createdProject.setDescription("Project description");
+        createdProject.setTeam("Test Team");
 
+        // Mock da criação do projeto
         when(projectService.createProjectOrUpdate(Mockito.any(ProjectDto.class))).thenReturn(createdProject);
 
         String projectDtoJson = objectMapper.writeValueAsString(projectDto);
@@ -58,7 +57,8 @@ class ProjectControllerTest {
                         .content(projectDtoJson))
                 .andExpect(status().isCreated())  // Verifica o status 201
                 .andExpect(jsonPath("$.name").value("Test Project"))
-                .andExpect(jsonPath("$.description").value("Project description"));
+                .andExpect(jsonPath("$.description").value("Project description"))
+                .andExpect(jsonPath("$.team").value("Test Team"));
     }
 
     @Test
@@ -69,10 +69,11 @@ class ProjectControllerTest {
         projectDto.setName("Updated Project");
         projectDto.setDescription("Updated description");
 
-        Project updatedProject = new Project();
+        ProjectResponse updatedProject = new ProjectResponse();
         updatedProject.setId(1);
         updatedProject.setName("Updated Project");
         updatedProject.setDescription("Updated description");
+        updatedProject.setTeam("Updated Team");
 
         when(projectService.createProjectOrUpdate(Mockito.any(ProjectDto.class))).thenReturn(updatedProject);
 
@@ -84,7 +85,8 @@ class ProjectControllerTest {
                         .content(projectDtoJson))
                 .andExpect(status().isOk())  // Verifica o status 200
                 .andExpect(jsonPath("$.name").value("Updated Project"))
-                .andExpect(jsonPath("$.description").value("Updated description"));
+                .andExpect(jsonPath("$.description").value("Updated description"))
+                .andExpect(jsonPath("$.team").value("Updated Team"));
     }
 
     @Test
