@@ -1,0 +1,27 @@
+services:
+  ProjectSync:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: projectsync/api
+    ports:
+      - "8082:8082"
+      - "5005:5005"
+    environment:
+      - ADDITIONAL_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005 -Xmx1G -Xms128m -XX:MaxMetaspaceSize=128m
+      - PROFILE=dev
+    depends_on:
+      - db
+    network_mode: "bridge"
+
+  db:
+    image: mysql:5.6
+    ports:
+      - "3307:3306"  # Porta externa alterada
+    environment:
+      - MYSQL_ROOT_PASSWORD=projectsync123  # Senha do root explícita
+      - MYSQL_DATABASE=projectsync_mysql
+    volumes:
+      - ./docker/volumes_mysql:/var/lib/mysql
+    network_mode: "bridge"
+
