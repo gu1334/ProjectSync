@@ -17,9 +17,9 @@ services:
   db:
     image: mysql:5.6
     ports:
-      - "3307:3306"  # Porta externa alterada
+      - "3307:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=projectsync123  # Senha do root explícita
+      - MYSQL_ROOT_PASSWORD=projectsync123
       - MYSQL_DATABASE=projectsync_mysql
     volumes:
       - ./docker/volumes_mysql:/var/lib/mysql

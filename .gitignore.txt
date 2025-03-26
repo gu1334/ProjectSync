@@ -1,4 +1,0 @@
-# Ignorar volumes do MySQL
-ProjectSync/docker/volumes_mysql/
-ProjectSync/docker/volumes_mysql/*
-ProjectSync/docker/volumes_mysql/**/*
